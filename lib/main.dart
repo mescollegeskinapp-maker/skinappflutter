@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:skinapp/bookinghistory.dart';
+import 'package:skinapp/changepassword.dart';
+import 'package:skinapp/editprofile.dart';
 import 'package:skinapp/feedback.dart';
+import 'package:skinapp/forgotpassword.dart';
 import 'package:skinapp/image.dart';
 import 'package:skinapp/login.dart';
+import 'package:skinapp/managemedicine.dart';
 import 'package:skinapp/register.dart';
 import 'package:skinapp/viewdoctors.dart';
 import 'package:skinapp/viewprescription.dart';
+import 'package:skinapp/viewprofile.dart';
 
 
 void main() {
@@ -25,7 +30,7 @@ class MyApp extends StatelessWidget {
         
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: ImageUpload()
+      home: LoginPage()
     );
   }
 }

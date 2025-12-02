@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-String baseUrl="http://192.168.1.40:5000";
+import 'package:flutter/material.dart';
+
+String baseUrl = "http://192.168.1.139:5000";
+final dio = Dio();
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({super.key});
 
-  // ------------------ CONTROLLERS ------------------
   final nameCtrl = TextEditingController();
   final ageCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
@@ -15,143 +17,176 @@ class RegisterPage extends StatelessWidget {
 
   String? selectedGender;
 
-  // ------------------ API CALL FUNCTION ------------------
- Future<void> userRegister(BuildContext context) async {
-  final dio = Dio();
+  Future<void> userRegister(BuildContext context) async {
+    
 
-  final data = {
-    "name": nameCtrl.text,
-    "age": ageCtrl.text,
-    "password": passwordCtrl.text,
-    "confirm_password": confirmPasswordCtrl.text,
-    "mobileno": mobileCtrl.text,
-    "email": emailCtrl.text,
-    "gender": selectedGender,
-  };
+    final data = {
+      "name": nameCtrl.text,
+      "age": ageCtrl.text,
+      "username":emailCtrl.text,
+      "password": confirmPasswordCtrl.text,
+      // "confirm_password": confirmPasswordCtrl.text,
+      "mobileno": mobileCtrl.text,
+      "email": emailCtrl.text,
+      "gender": selectedGender,
+    };
 
-  try {
-    final response = await dio.post(
-      "${baseUrl}UserReg_api/",   // <-- Corrected URL
-      data: data,
-    );
-
-    if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Registration Successful!")),
+    try {
+      final response = await dio.post(
+        "$baseUrl/UserReg_api",
+        data: data,
       );
-    } else {
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Registration Successful!")),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed: ${response.data}")),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed: ${response.data}")),
+        SnackBar(content: Text("Error: $e")),
       );
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error: $e")),
-    );
   }
-}
 
-
-  // ------------------ UI ------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('RegisterPage')),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          spacing: 10,
-          children: [
-            TextFormField(
-              controller: nameCtrl,
-              decoration: InputDecoration(
-                label: const Text('Name'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+      backgroundColor: const Color(0xFFF5F7FA),
+
+      appBar: AppBar(
+        title: const Text("Register"),
+        centerTitle: true,
+        elevation: 2,
+        backgroundColor: Colors.blue,
+      ),
+
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                    blurRadius: 8, color: Colors.black12, offset: Offset(0, 3))
+              ],
             ),
-            TextFormField(
-              controller: ageCtrl,
-              decoration: InputDecoration(
-                label: const Text('Age'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                const Text(
+                  "Create Your Account",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
                 ),
-              ),
-            ),
-            TextFormField(
-              controller: passwordCtrl,
-              obscureText: true,
-              decoration: InputDecoration(
-                label: const Text('Password'),
-                suffixIcon: const Icon(Icons.visibility),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+
+                const SizedBox(height: 20),
+
+                _buildTextField("Name", nameCtrl, Icons.person),
+                _buildTextField("Age", ageCtrl, Icons.cake),
+                _buildTextField("Mobile No", mobileCtrl, Icons.phone),
+                _buildTextField("Email", emailCtrl, Icons.email),
+
+                _buildPasswordField("Password", passwordCtrl),
+                _buildPasswordField("Confirm Password", confirmPasswordCtrl),
+
+                const SizedBox(height: 10),
+
+                DropdownButtonFormField(
+                  decoration: _inputDecoration("Gender"),
+                  items: ['male', 'female', 'others']
+                      .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ))
+                      .toList(),
+                  onChanged: (value) => selectedGender = value,
                 ),
-              ),
-            ),
-            TextFormField(
-              controller: confirmPasswordCtrl,
-              obscureText: true,
-              decoration: InputDecoration(
-                label: const Text('Confirm Password'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            TextFormField(
-              controller: mobileCtrl,
-              decoration: InputDecoration(
-                label: const Text('Mobile No'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            TextFormField(
-              controller: emailCtrl,
-              decoration: InputDecoration(
-                label: const Text('Email'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            DropdownButtonFormField(
-              decoration: InputDecoration(
-                label: const Text('Gender'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              items: ['male', 'female', 'others']
-                  .map(
-                    (e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
+
+                const SizedBox(height: 25),
+
+                Center(
+                  child: GestureDetector(
+                    onTap: () => userRegister(context),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 14, horizontal: 20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.blue, Colors.blueAccent],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "Register",
+                          style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                selectedGender = value;
-              },
+                  ),
+                ),
+
+              ],
             ),
-            const SizedBox(height: 15),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 157, 203, 211),
-                foregroundColor: const Color.fromARGB(255, 20, 19, 19),
-              ),
-              onPressed: () {
-                userRegister(context);  // <<< CALL THE API FUNCTION
-              },
-              child: const Text('Submit'),
-            ),
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  // Reusable TextField
+  Widget _buildTextField(String label, TextEditingController controller, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: controller,
+        decoration: _inputDecoration(label).copyWith(prefixIcon: Icon(icon)),
+      ),
+    );
+  }
+
+  // Password Field
+  Widget _buildPasswordField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: controller,
+        obscureText: true,
+        decoration: _inputDecoration(label).copyWith(
+          prefixIcon: const Icon(Icons.lock),
+          suffixIcon: const Icon(Icons.visibility),
+        ),
+      ),
+    );
+  }
+
+  // Input Decoration
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      filled: true,
+      fillColor: const Color(0xFFF0F3F7),
     );
   }
 }
