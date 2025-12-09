@@ -2,6 +2,8 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:skinapp/login.dart';
 import 'package:skinapp/register.dart';
 
 class Viewdoctors extends StatefulWidget {
@@ -15,6 +17,9 @@ class _ViewdoctorsState extends State<Viewdoctors> {
 
   bool isLoading = true;
   List<Map<String, dynamic>> doctors = [];
+  String? pickeddate;
+
+
   Future<void> fetchDoctors() async {
   setState(() {
     isLoading = true;
@@ -40,10 +45,35 @@ class _ViewdoctorsState extends State<Viewdoctors> {
   }
 }
 
-
+  Future<void>bookDoctor(int doctorId) async {
+    final data={
+      "DOCTORID":doctorId,
+      "appoinmentdate":pickeddate.toString(),
+    };
+     try {
+      final response = await dio.post(
+        "$baseUrl/Bookappointment_api/$loginid",
+        data: data,
+      );
+      if (response.statusCode ==201 || response.statusCode ==200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Doctor Booked Successfully!")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed: ${response.data}")),
+        );
+      }
+    }
+    catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
+  }
   
 
-  Future<void> _selectDateAndBook(BuildContext context) async {
+  Future<void> _selectDateAndBook(BuildContext context, doctorId) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -62,9 +92,14 @@ class _ViewdoctorsState extends State<Viewdoctors> {
         );
       },
     );
-
+    
     if (pickedDate == null) return;
 
+    setState(() {
+      pickeddate = DateFormat('yyyy-MM-dd').format(pickedDate);
+
+    });
+    
     bool? confirmBooking = await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -83,7 +118,7 @@ class _ViewdoctorsState extends State<Viewdoctors> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
             ),
-            onPressed: () => Navigator.pop(ctx, true),
+            onPressed: () => bookDoctor(doctorId),
             child: Text("Confirm"),
           ),
         ],
@@ -188,7 +223,7 @@ class _ViewdoctorsState extends State<Viewdoctors> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: () => _selectDateAndBook(context),
+                    onPressed: () => _selectDateAndBook(context, doctor['id']),
                     child: Text("Book",style: TextStyle(color: Colors.white),),
                   ),
                 ],

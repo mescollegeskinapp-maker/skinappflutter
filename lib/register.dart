@@ -2,7 +2,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-String baseUrl = "http://192.168.1.139:5000";
+String baseUrl ="http://192.168.1.167:5000";
 final dio = Dio();
 
 class RegisterPage extends StatelessWidget {

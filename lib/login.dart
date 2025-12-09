@@ -60,9 +60,10 @@ class LoginPage extends StatelessWidget {
 
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passwordCtrl = TextEditingController();
+
+
   Future<void> Login(BuildContext context) async {
     final dio = Dio();
-
     final data = {
       
       
@@ -71,6 +72,8 @@ class LoginPage extends StatelessWidget {
       // "confirm_password": confirmPasswordCtrl.text,
       
     };
+    print('************************');
+     print(data);
 
     try {
       final response = await dio.post(
