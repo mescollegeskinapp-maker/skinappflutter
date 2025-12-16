@@ -93,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4F9),
-      appBar: AppBar(
+      appBar: AppBar(actions: [IconButton(onPressed: (){_showLogoutDialog(context);}, icon: Icon(Icons.logout))],
         backgroundColor: Colors.teal,
         title: const Text("User Profile"),
         centerTitle: true,
@@ -214,4 +214,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
     );
   }
+}
+void _showLogoutDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Logout'),
+      content: const Text('Are you sure you want to logout?'),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.redAccent,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => LoginPage()),
+              (route) => false,
+            );
+          },
+          child: const Text('Logout'),
+        ),
+      ],
+    ),
+  );
 }
